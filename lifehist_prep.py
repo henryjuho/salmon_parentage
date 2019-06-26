@@ -4,7 +4,6 @@
 def main():
 
     id_info = 'sal_parentage/SNPgeno_janlaine_IDs_020818_colfix.csv'
-    genotype_data = 'SNPgeno_janlaine_020818.txt'
 
     # reformat id file
 
