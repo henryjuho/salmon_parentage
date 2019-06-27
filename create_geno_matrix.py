@@ -55,7 +55,7 @@ def main():
 
         # catches header and ensures blank column name for ID column
         if not line[0].isnumeric():
-            print(',' + ','.join(line))
+            print('.,' + ','.join(line))
             continue
 
         # process data lines, uses first geno as reference
