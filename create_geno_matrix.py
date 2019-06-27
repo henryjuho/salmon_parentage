@@ -56,13 +56,18 @@ def main():
         # catches header and ensures blank column name for ID column
         if not line[0].isnumeric():
             print(',' + ','.join(line))
+            continue
 
         # process data lines, uses first geno as reference
         fish_id = line[0]
         genos = line[1:]
 
-        if genos[0] != 'NA':
-            ref_proxy = genos[0][0]
+        ref_proxy = pick_ref(genos)
+        geno_codes = [assign_geno_code(ref_proxy, x) for x in genos]
+
+        outline = [int(fish_id)] + geno_codes
+
+        print(*outline, sep=',')
 
 
 if __name__ == '__main__':
