@@ -1,6 +1,33 @@
 #!/usr/bin/env python
 
 
+def read_geno_file(geno_file_name):
+
+    """
+    reads in file to allow loop across columns
+    :param geno_file_name: str
+    :return: list
+    """
+
+    geno_data = []
+
+    for line in open(geno_file_name):
+
+        line = line.rstrip().replace('"', '').split('\t')
+
+        # adds column name for ids and populates list entry
+        if line[0].startswith('AK'):
+            line = ['ID'] + line
+            geno_data = [[x] for x in line]
+            continue
+
+        # then populates each column
+        for i in range(0, len(geno_data)):
+            geno_data[i].append(line[i])
+
+    return geno_data
+
+
 def pick_ref(genos):
 
     """
@@ -33,12 +60,6 @@ def assign_geno_code(ref, geno):
 
     else:
 
-        base_dict = {'C': 'C', 'G': 'C', 'T': 'T', 'A': 'T'}
-
-        ref = base_dict[ref]
-
-        geno = ''.join([base_dict[x] for x in geno])
-
         # counts number of times reference allele is present
         code = geno.count(ref)
 
@@ -49,25 +70,39 @@ def main():
 
     geno_data = 'sal_parentage/SNPgeno_janlaine_020818.txt'
 
-    for line in open(geno_data):
+    genos = read_geno_file(geno_data)
 
-        line = line.rstrip().replace('"', '').split('\t')
+    recoded = []
 
-        # catches header and ensures blank column name for ID column
-        if not line[0].isnumeric():
-            print('.,' + ','.join(line))
+    for col in genos:
+
+        # process id column
+        if col[0] == 'ID':
+            recoded.append(col)
             continue
 
-        # process data lines, uses first geno as reference
-        fish_id = line[0]
-        genos = line[1:]
+        # sorts out genotypes
+        snp_id = col[0]
+        alleles = col[1:]
 
-        ref_proxy = pick_ref(genos)
-        geno_codes = [assign_geno_code(ref_proxy, x) for x in genos]
+        # skips cols that are all NAs
+        if len(set(alleles)) == 1 and alleles[0] == 'NA':
+            continue
 
-        outline = [int(fish_id)] + geno_codes
+        ref_proxy = pick_ref(alleles)
 
-        print(*outline, sep=',')
+        geno_codes = [assign_geno_code(ref_proxy, x) for x in alleles]
+
+        outline = [snp_id] + geno_codes
+
+        recoded.append(outline)
+
+    # swap back from columns to rows and output
+    for i in range(0, len(recoded[0])):
+
+        new_line = [recoded[n][i] for n in range(0, len(recoded))]
+
+        print(*new_line, sep=',')
 
 
 if __name__ == '__main__':
