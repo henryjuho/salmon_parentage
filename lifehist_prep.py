@@ -27,7 +27,8 @@ def main():
             # calculate birth year
             age = line[6]
             if 'SW' in age:
-                age = 5 + int(age.replace('SW', ''))
+                # age = 5 + int(age.replace('SW', ''))
+                age = 5
             else:
                 age = int(age)
 
