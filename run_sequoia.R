@@ -7,7 +7,7 @@ library(viridis)
 
 setwd('/home/local/hbarton/salmon_parentage')
 
-genos <- as.matrix(read.csv('sal_parentage/sal_geno_matrix_sequoia.csv', row.names=1))
+genos <- as.matrix(read.csv('sal_parentage/sal_geno_matrix_sequoia_maf0.3.csv', row.names=1))
 life_hist = read.csv('sal_parentage/sal_lifehist_sequoia.csv')
 
 # duplicate check & parentage assignment (takes few minutes)
@@ -18,7 +18,9 @@ ParOUT <- sequoia(GenoM = genos,  LifeHistData = life_hist, MaxSibIter = 0, Err=
 
 # inspect duplicates (intentional or accidental)
 
-#ParOUT$DupGenotype
+# output duplicate info
+dups = subset(ParOUT$DupGenotype, select=c('ID1', 'ID2', 'Mismatch', 'LLR'))
+write.csv(dups, file='sal_parentage/duplicates.csv', row.names = F)
 
 # check if distr. of age-differences for each relative type is sensible
 
@@ -31,7 +33,8 @@ ggplot(long_age, aes(x=Var1, y=value, colour=Var2)) +
   geom_point(stat='identity') +
   geom_line(stat='identity') +
   scale_colour_viridis(discrete=T) + 
-  labs(x='Age difference? should be 11year span?', y='AgePrior')
+  labs(x='Age difference', y='AgePrior') +
+  theme(legend.title=element_blank())
 
 dev.off()
 
@@ -43,12 +46,19 @@ dev.off()
 
 # polish dataset: remove one indiv. from each duplicate pair 
 # (1st one, or one w lowest call rate) & drop high error rate SNPs
-Geno2 <- genos[!rownames(genos) %in% ParOUT$DupGenotype$ID2, ]
-#Geno2 <- Geno2[, which(stats[,"ER"]>50)]
+geno_cleaned <- genos[!rownames(genos) %in% ParOUT$DupGenotype$ID2, ]
 
-#stats <- SnpStats(Geno2, ParOUT$PedigreePar)
+# filter mendelian errors over 15
+snp_ids = row.names(subset(as.data.frame(stats), ER>15)) 
+snp_ids = sapply(strsplit(snp_ids, split='SNP0', fixed=TRUE), function(x) (x[2]))
+snp_ids = sort(as.numeric(snp_ids))
 
-SeqOUT <- sequoia(GenoM = Geno2, MaxSibIter = 20, Err=0.001)
+geno_cleaned = geno_cleaned[, -snp_ids]
+
+# post cleaning stats
+#stats <- SnpStats(geno_cleaned, ParOUT$PedigreePar)
+
+SeqOUT <- sequoia(GenoM = geno_cleaned, MaxSibIter = 20, Err=0.001)
 
 #SummarySeq(SeqOUT)
 

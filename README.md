@@ -37,7 +37,7 @@ The sequoia input files were prepared as follows:
 
 ```bash
 ./lifehist_prep.py
-./create_geno_matrix.py > sal_parentage/sal_geno_matrix_sequoia.csv
+./create_geno_matrix.py > sal_parentage/sal_geno_matrix_sequoia_maf0.3.csv
 ```
 
 Age for SW individuals was set to 5, maximum age of fresh water individuals in this dataset was 3.

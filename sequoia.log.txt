@@ -1,0 +1,34 @@
+Loading required package: viridisLite
+'GenoM' looks OK!
+likely duplicate genotypes found, consider removing
+Parentage ... 
+Initial total LL : 
+[1] -56860.55
+Post-parentage total LL : 
+[1] -54501.53
+Calculating parental LLR ... 
+assigned 334 dams and 362 sires to 2013 individuals
+null device 
+          1 
+null device 
+          1 
+Warning in sequoia(GenoM = Geno2, MaxSibIter = 20, Err = 0.001) :
+  no LifeHistData provided, expect lower assignment rate
+'GenoM' looks OK!
+Parentage ... 
+Initial total LL : 
+[1] -56044.54
+Post-parentage total LL : 
+[1] -56044.54
+Calculating parental LLR ... 
+assigned 0 dams and 0 sires to 1982 individuals
+Sibships - Initial Total LL : 
+[1] -56044.54
+Round 01 end, Total LogLik: 
+[1] -52808.58
+No. dams, sires (incl. dummies): 
+[1] 368 368
+Error in SeqParSib(ParSib = "sib", Specs = Specs, GenoM = GenoM, LhIN = LifeHistData[,  : 
+    ERROR! ***Invalid ParProb!***
+Calls: sequoia -> SeqParSib
+Execution halted
