@@ -181,6 +181,13 @@ def main():
             # add ok UTS samples to list
             uts_samples.append(reformed_line)
 
+    # output indiv removed
+    with open('removed_indivs.csv', 'w') as rm_ids:
+
+        print('ID', 'run', 'proportion_NA', sep=',', file=rm_ids)
+        for indiv in low_call_ids:
+            print(*indiv, sep=',', file=rm_ids)
+
     # summarise markers from controls
     review_control(male_controls, 'marker_summary.csv')
 
