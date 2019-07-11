@@ -3,6 +3,61 @@
 import re
 
 
+def clean_data(sample_dat, filtered_out, clean_out):
+
+    """
+    removes bad loci and specified loci
+    :param sample_dat: list
+    :param filtered_out: str
+    :param clean_out: str
+    :return: None
+    """
+
+    samples = transpose_geno_data(sample_dat)
+    clean = []
+
+    with open(filtered_out, 'w') as removed_snps, open(clean_out, 'w') as clean_file:
+
+        print('snp_id', 'proportion_missing', sep=',', file=removed_snps)
+
+        for col in samples:
+
+            # process id column
+            if col[0] == '':
+                clean.append(col)
+                continue
+
+            # sorts out genotypes
+            snp_id = col[0]
+            alleles = col[1:]
+
+            # skips cols that are more than 40% NAs
+            percent_na = alleles.count('NA') / float(len(alleles))
+            if percent_na > 0.4:
+                print(snp_id, percent_na, sep=',', file=removed_snps)
+                continue
+
+            # VIP = vgll3_Top, vgll3_mis1, vgll3, mis2, vgll3_topAlt, also SDY
+            # filter specific loci here
+            if snp_id in ['SDY_ion2']:
+                print(snp_id, percent_na, sep=',', file=removed_snps)
+                continue
+
+            # convert alleles to form for colony 1,3=homo, 2=hetero?
+            # allele_dict = {'1': '11', '2': '12', '3': '22', 'NA': '00'}
+            # alleles = [allele_dict[z] for z in alleles]
+
+            # update clean data
+            new_col = [snp_id] + alleles
+            clean.append(new_col)
+
+        # output clean data
+        for i in range(0, len(clean[0])):
+
+            reconstructed_line = [x[i] for x in clean]
+            print(*reconstructed_line, sep=',', file=clean_file)
+
+
 def review_control(control_list, error_out):
 
     """
@@ -87,7 +142,7 @@ def main():
                     uts_samples.append(header)
                 continue
 
-            id_info = line[0]
+            id_info = line[0].replace('O', '0')
             geno_calls = line[1:]
 
             # catch water controls
@@ -118,7 +173,7 @@ def main():
 
             # filter samples with many NAs and output list of IDs, run and percent NAs
             percent_na = geno_calls.count('NA') / float(len(geno_calls))
-            if percent_na > 0.8:
+            if percent_na > 0.6:
                 fail_info = (fish_id, run[0], percent_na)
                 low_call_ids.append(fail_info)
                 continue
@@ -129,7 +184,8 @@ def main():
     # summarise markers from controls
     review_control(male_controls, 'marker_summary.csv')
 
-    # todo loci failing
+    # now clean up data - remove low success loci
+    clean_data(uts_samples, filtered_out='removed_loci.csv', clean_out='uts_sal_allruns.filtered.csv')
 
 
 if __name__ == '__main__':
