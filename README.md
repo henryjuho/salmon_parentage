@@ -19,3 +19,17 @@ removed, along with the SDY locus, list of removed loci: [removed_loci.csv](remo
 60% missing genotypes were also removed: [removed_indivs.csv](removed_indivs.csv). The male controls were used to estimate
 a per locus error rate: [marker_summary.csv](marker_summary.csv). The cleaned data was written to: 
 [uts_sal_allruns.filtered.csv](uts_sal_allruns.filtered.csv).
+
+A ```.dat``` file for colony was generated as follows:
+
+```bash
+python create_dat_file.py -geno uts_sal_allruns.filtered.csv -marks marker_summary.csv > uts_salmon.dat
+```
+
+Colony2 was run as follows:
+
+```bash
+mkdir sal_parentage/colony_out
+cd sal_parentage/colony_out/
+mpirun -np 7 ~/colony2/colony2p.ifort.impi2015.out IFN:/home/hbarton/salmon_parentage/uts_salmon.dat &> uts_sal_colony.log.txt &
+```
