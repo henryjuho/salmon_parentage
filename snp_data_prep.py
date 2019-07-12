@@ -37,9 +37,9 @@ def clean_data(sample_dat, filtered_out, clean_out):
                 print(snp_id, percent_na, sep=',', file=removed_snps)
                 continue
 
-            # VIP = vgll3_Top, vgll3_mis1, vgll3, mis2, vgll3_topAlt, also SDY
+            # VIP = vgll3_Top, vgll3_mis1, vgll3, mis2, vgll3_topAlt, also SDY_ion2
             # filter specific loci here
-            if snp_id in ['SDY_ion2']:
+            if snp_id in []:
                 print(snp_id, percent_na, sep=',', file=removed_snps)
                 continue
 
