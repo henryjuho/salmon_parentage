@@ -95,10 +95,20 @@ def colony_geno_dat(geno_file_name):
     female_candidates = []
     male_candidates = []
 
+    processed_fish = set()
+
     # process genotype data for offspring, male candidates, female candidates
     for line in genos[1:]:
 
         line = line.rstrip().split(',')
+        fish = line[0]
+
+        # skip repeat individuals
+        if fish in processed_fish:
+            continue
+
+        processed_fish |= {fish}
+
         alleles = line[1:]
 
         # assign sex
@@ -113,7 +123,7 @@ def colony_geno_dat(geno_file_name):
         del alleles[sdy]
 
         # recode genos
-        allele_dict = {'1': '11', '2': '12', '3': '22', 'NA': '00'}
+        allele_dict = {'1': '1 1', '2': '1 2', '3': '2 2', 'NA': '0 0'}
         alleles = [allele_dict[z] for z in alleles]
         recode_line = [line[0]] + alleles
         recode_line = ' '.join(recode_line)
