@@ -24,6 +24,7 @@ A ```.dat``` file for colony was generated as follows:
 
 ```bash
 python create_dat_file.py -geno uts_sal_allruns.filtered.csv -marks marker_summary.csv > uts_salmon.dat
+python create_dat_file.py -geno uts_sal_allruns.filtered.csv -marks marker_summary.csv > uts_salmon_mediumrun.dat
 ```
 
 Colony2 was run as follows:

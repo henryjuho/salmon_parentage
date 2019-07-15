@@ -4,13 +4,15 @@ import argparse
 import random
 
 
-def colony_header(dataset_name, n_snp, n_offspring):
+def colony_header(dataset_name, n_snp, n_offspring, run_l, prec):
 
     """
     formats header section of colony dat file
     :param dataset_name: str
     :param n_snp: int
     :param n_offspring: int
+    :param run_l: int
+    :param prec: int
     :return: str
     """
 
@@ -28,16 +30,17 @@ def colony_header(dataset_name, n_snp, n_offspring):
               "0  0        ! 0/1=Polygamy/Monogamy for males & females\n"
               "1           ! 0/1=Clone inference =No/Yes\n"
               "0           ! 0/1=Full sibship size scaling =No/Yes\n"
-              "0           ! 0,1,2,3=No,weak,medium,strong sibship size prior; mean paternal & meteral sibship\n"
+              "0           ! 0,1,2,3=No,weak,medium,strong sibship size prior; mean paternal & meternal sibship\n"
               "0           ! 0/1=Unknown/Known population allele frequency\n"
               "1           ! Number of runs\n"
-              "2           ! Length of run\n"
+              "{run_l}           ! Length of run, short, medium, long, very long run\n"
               "0           ! monitor method\n"
               "10000       ! monitor interval\n"
               "0           ! GUI mode\n"
               "1           ! analysis method 0,1,2 pairwise like, full like, combo\n"
-              "1           ! precision 0,1,2,3 low,medium,high,vhigh\n"
-              "").format(name=dataset_name, n_off=n_offspring, n_snp=n_snp, seed=seed)
+              "{precision}           ! precision 0,1,2,3 low,medium,high,vhigh\n"
+              "").format(name=dataset_name, n_off=n_offspring, n_snp=n_snp, seed=seed,
+                         run_l=run_l, precision=prec)
 
     return struct
 
@@ -71,8 +74,8 @@ def colony_marker_info(ordered_marker_list, marker_file):
                 "{typing_error} !other typing error at each locus\n"
                 "").format(markers=' '.join(out_markers),
                            marker_types=' '.join(marker_type),
-                           dropout=' '.join(out_drop),
-                           typing_error=' '.join(other_error))
+                           dropout=' '.join(other_error),
+                           typing_error=' '.join(out_drop))
 
     return mark_dat
 
@@ -153,6 +156,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-geno', help='CSV file containing genotypes', required=True)
     parser.add_argument('-marks', help='CSV file providing data on marker error', required=True)
+    parser.add_argument('-run_length', choices=[1, 2, 3, 4], type=int, default=2)
+    parser.add_argument('-precision', choices=[0, 1, 2, 3], type=int, default=1)
     args = parser.parse_args()
 
     # first off get genotypes read in and sorted
@@ -162,14 +167,15 @@ def main():
     marker_str = colony_marker_info(ordered_marker_list=geno_dat['markers'], marker_file=args.marks)
 
     # get header info
-    head = colony_header(dataset_name='uts_salmon', n_snp=len(geno_dat['markers']), n_offspring=len(geno_dat['off']))
+    head = colony_header(dataset_name='uts_salmon', n_snp=len(geno_dat['markers']), n_offspring=len(geno_dat['off']),
+                         run_l=args.run_length, prec=args.precision)
 
     print(head)
     print(marker_str)
     print('\n'.join(geno_dat['off'])+'\n')
 
     # print infor about parents
-    print(0.01, 0.01, '! prob father and mother included in candidates', sep=' ')
+    print(0.10, 0.10, '! prob father and mother included in candidates', sep=' ')
     print(len(geno_dat['m_cand']), len(geno_dat['f_cand']), '   ! number of candidate males and females\n', sep=' ')
 
     print('\n'.join(geno_dat['m_cand'])+'\n')
