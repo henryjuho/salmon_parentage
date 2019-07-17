@@ -3,13 +3,14 @@
 import subprocess
 import os
 import shutil
+import sys
 
 
 def main():
 
     n_cores = 20
     run_time = 5 * 60
-    top_dir = '/fastdata/bop15hjb/colony_speed/'
+    top_dir = sys.argv[1]
     data_file = 'uts_salmon.dat'
     colony = 'colony2p.ifort.impi2015.out'
 
@@ -25,12 +26,14 @@ def main():
         shutil.copy(top_dir + colony, run_dir)
         os.chdir(run_dir)
 
-        colony_cmd = 'mpirun -np {} ./colony2p.ifort.impi2015.out IFN:uts_salmon.dat &> colony.log.txt'.format(i)
+        colony_cmd = 'mpirun -np {} ./colony2p.ifort.impi2015.out IFN:uts_salmon.dat 2>&1 | cat > colony.log.txt'.format(i)
 
         try:
             subprocess.call(colony_cmd, shell=True, timeout=run_time)
         except subprocess.TimeoutExpired:
-            pass
+            # clean up
+            kill_cmd = 'pgrep -u "$(whoami)" colony | tail -n {} | while read i; do kill -9 $i; done'.format(i)
+            subprocess.call(kill_cmd, shell=True)
 
         # get iterations
         grep = "grep Itr= colony.log.txt | tail -n1 | cut -d ',' -f 3 | cut -d '=' -f 2"
