@@ -29,8 +29,25 @@ python create_dat_file.py -geno uts_sal_allruns.filtered.csv -marks marker_summa
 
 Colony2 was run as follows:
 
+Quick run:
+
 ```bash
 mkdir sal_parentage/colony_out
 cd sal_parentage/colony_out/
 mpirun -np 7 ~/colony2/colony2p.ifort.impi2015.out IFN:/home/hbarton/salmon_parentage/uts_salmon.dat &> uts_sal_colony.log.txt &
+```
+
+Medium run (competing with sharc): 
+
+```bash
+mkdir sal_parentage/colony_out_medium
+cd sal_parentage/colony_out_medium
+mpirun -np 4 ~/colony2/colony2p.ifort.impi2015.out IFN:/home/hbarton/salmon_parentage/uts_salmon_mediumrun.dat &> uts_sal_colony_mdeium.log.txt &
+```
+
+Colony2 runs on sharc
+
+```bash
+mkdir /fastdata/bop15hjb/sal_colony
+./run_colony.py -in_dat /home/bop15hjb/salmon_parentage/uts_salmon_mediumrun.dat -np 28
 ```
