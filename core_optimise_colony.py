@@ -25,7 +25,7 @@ def main():
         shutil.copy(top_dir + colony, run_dir)
         os.chdir(run_dir)
 
-        colony_cmd = 'mpirun -np {} colony2p.ifort.impi2015.out IFN:uts_salmon.dat &> colony.log.txt'.format(n_cores)
+        colony_cmd = 'mpirun -np {} ./colony2p.ifort.impi2015.out IFN:uts_salmon.dat &> colony.log.txt'.format(i)
 
         try:
             subprocess.call(colony_cmd, shell=True, timeout=run_time)
@@ -33,9 +33,9 @@ def main():
             pass
 
         # get iterations
-        grep = "grep Itr= uts_sal_colony.log.txt | tail -n1 | cut -d ',' -f 3 | cut -d '=' -f 2"
-        itr = int(subprocess.Popen(grep, shell=True, stdout=subprocess.PIPE).communicate()[0].split('\n')[0])
-        it_ps = itr / run_time
+        grep = "grep Itr= colony.log.txt | tail -n1 | cut -d ',' -f 3 | cut -d '=' -f 2"
+        itr = subprocess.Popen(grep, shell=True, stdout=subprocess.PIPE).communicate()[0].decode().split('\n')[0]
+        it_ps = int(itr) / run_time
 
         print(i, itr, run_time, it_ps, sep=',')
 
