@@ -7,8 +7,8 @@ import argparse
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('in_dat', help='location of .dat file', required=True)
-    parser.add_argument('-np', help='number of cores', required=True)
+    parser.add_argument('-in_dat', help='location of .dat file', required=True)
+    parser.add_argument('-np', help='number of cores', type=int, required=True)
     args = parser.parse_args()
 
     cmd = ['cd /fastdata/bop15hjb/sal_colony']
@@ -19,7 +19,7 @@ def main():
 
     cmd.append(colony)
 
-    q_sub(cmd, out='uts_sal_colony', rmem=6, mem=6, tr=args.np, evolgen=True)
+    q_sub(cmd, out='./uts_sal_colony', rmem=6, mem=6, tr=args.np, evolgen=True)
 
 
 if __name__ == '__main__':
