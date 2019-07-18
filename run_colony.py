@@ -19,7 +19,7 @@ def main():
 
     cmd.append(colony)
 
-    q_sub(cmd, out='./uts_sal_colony', rmem=6, mem=6, tr=args.np, evolgen=True)
+    q_sub(cmd, out='./uts_sal_colony', t=96, rmem=8, mem=6, tr=args.np, evolgen=True)
 
 
 if __name__ == '__main__':
