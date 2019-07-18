@@ -61,6 +61,11 @@ mkdir /fastdata/bop15hjb/sal_colony
 A pedigree csv was built from the colony output and sex added in using the SDY genotypes in the filtered calls and birth 
 year was estimated based on ID, adults were arbitrarily assigned a 5 year stint in freshwater.  
 
+Quick run:
+
 ```bash
-python colony2ped.py -in_dat sal_parentage/colony_out/uts_salmon.BestConfig_Ordered -geno uts_sal_allruns.filtered.csv > uts_ped.csv
+python colony2ped.py -in_dat sal_parentage/colony_out/uts_salmon.BestConfig_Ordered -geno uts_sal_allruns.filtered.csv -by_gen > uts_ped.csv
+Rscript plot_ped.R 
 ```
+
+![](sal_ped.png)
