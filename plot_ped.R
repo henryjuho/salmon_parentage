@@ -2,6 +2,7 @@ library(reshape2)
 library(ggplot2)
 library(plyr)
 library(viridis)
+library(dplyr)
 
 generateXcoord <- function(size){
 
@@ -22,7 +23,7 @@ generateXcoord <- function(size){
   }
 
 
-ped_data = read.csv('uts_ped.csv')
+ped_data = read.csv('uts_ped.csv', stringsAsFactors=F)
 
 #ped_data = subset(ped_data, gender!='unknown')
 
@@ -39,17 +40,31 @@ names(ped3)[3] <- "id"
 ped3 <- join(ped3, ped_data[,c("id", "birth_year", "gender")])
 ped3 = subset(ped3, gender!='unknown')
 
+head(ped3)
+str(ped3)
 #~~ Create an object to save the x coordinates within
 xcoords <- NULL
+z = -1
 
-for(i in unique(ped3$birth_year)){
+for(i in sort(unique(ped3$birth_year))){
 
   # Extract the number of Unique IDs per year and generate X coords
   ids  <- unique(ped3$id[which(ped3$birth_year == i)])
+
   newx <- generateXcoord(length(ids)) # generate X coordinates
 
   # Append to xcoords
-  xcoords <- rbind(xcoords, data.frame(id = ids, x = sample(newx, size = length(newx), replace = F)))
+  new_dat = data.frame(id = ids)
+  new_dat = dplyr::left_join(new_dat, subset(ped_data, select=c('id', 'dam', 'sire', 'gender')))
+  if(z==-1 | z==5){
+    new_dat = arrange(new_dat, gender, id)
+    new_dat$x = newx * 5
+  }else{
+    new_dat = arrange(new_dat, dam, sire)
+    new_dat$x = newx + z
+  }
+  z = z + 1
+  xcoords <- rbind(xcoords, new_dat)
 
   rm(ids, newx)
   }
@@ -67,7 +82,8 @@ ggplot(ped3, aes(x, -birth_year, colour=gender)) +
   geom_line(aes(group = Group), alpha = 0.1, colour='darkgrey') +
   geom_point() +
   theme_bw() +
-  theme(legend.title     = element_blank(),
+  theme(legend.position=c(0.05, 0.35),
+        legend.title     = element_blank(),
         axis.text.x      = element_blank(),
         axis.text.y      = element_text(colour = "darkgrey"),
         axis.ticks.y     = element_blank(),
