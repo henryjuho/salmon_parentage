@@ -75,7 +75,7 @@ def colony_marker_info(ordered_marker_list, marker_file):
                 "").format(markers=' '.join(out_markers),
                            marker_types=' '.join(marker_type),
                            dropout=' '.join(other_error),
-                           typing_error=' '.join(out_drop))
+                           typing_error=' '.join(other_error))
 
     return mark_dat
 
