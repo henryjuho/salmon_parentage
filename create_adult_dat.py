@@ -28,7 +28,7 @@ def main():
     print(head)
     print(marker_str)
     print('\n'.join(geno_dat['m_cand']))
-    print('\n'.join(geno_dat['m_cand']) + '\n')
+    print('\n'.join(geno_dat['f_cand']) + '\n')
 
     # print info about parents
     print(0, 0, '! prob father and mother included in candidates', sep=' ')
