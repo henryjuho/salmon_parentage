@@ -74,7 +74,7 @@ ped3 <- join(ped3, xcoords)
 
 
 # plot
-png('sal_ped.png', width=20, height=6, units='in', res=320)
+png('sal_dam_sires.png', width=20, height=6, units='in', res=320)
 
 birthyears <- sort(unique(ped3$birth_year))
 
