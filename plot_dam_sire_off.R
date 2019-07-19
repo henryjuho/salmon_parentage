@@ -90,7 +90,8 @@ ggplot(ped3, aes(x, -birth_year, colour=gender)) +
         axis.ticks.x     = element_blank()) +
   theme(plot.margin = unit(c(1.5, 1.5, 1.5, 1.5), units = "cm")) +
   scale_y_continuous(breaks = -seq(min(birthyears), max(birthyears), 1),
-                     labels =  seq(min(birthyears), max(birthyears), 1)) +
+                     labels =
+                     c('Fathers', '', '', '', '', '2013', '2014', '2015', '2016', '2017', '', '', '', '', 'Mothers')) +
   scale_colour_manual(values=viridis(4)[1:3]) +
   labs(x = "", y = "")
 
