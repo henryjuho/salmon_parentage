@@ -5805,7 +5805,6 @@ UTS_16_0y_1838,*530,UTS_15A_054,2016,male
 UTS_16_0y_1868,*530,UTS_15A_054,2016,male
 UTS_16_0y_1947,*530,UTS_15A_054,2016,male
 UTS_16_0y_1971,*530,UTS_15A_054,2016,female
-OffspringID,FatherID,MotherID,unknown,NA
 Uts_14A_098,gp*112,gp#43,unknown,male
 Uts_14A_065,gp*112,gp#43,unknown,male
 Uts_11_07,gp*101,gp#1,unknown,male
@@ -7375,8 +7374,6 @@ UTS_15A_075,gp*169,gp#171,unknown,male
 #260,NA,NA,unknown,unknown
 *403,NA,NA,unknown,unknown
 *530,NA,NA,unknown,unknown
-FatherID,NA,NA,unknown,unknown
-MotherID,NA,NA,unknown,unknown
 gp*112,NA,NA,unknown,unknown
 gp#43,NA,NA,unknown,unknown
 gp*101,NA,NA,unknown,unknown

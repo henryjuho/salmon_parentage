@@ -3,6 +3,7 @@ library(ggplot2)
 library(plyr)
 library(viridis)
 library(dplyr)
+library(tidyr)
 
 generateXcoord <- function(size){
 
@@ -23,16 +24,19 @@ generateXcoord <- function(size){
   }
 
 
-ped_data = read.csv('uts_ped.csv', stringsAsFactors=F)
+ped_data = read.csv('uts_ped_split_parents_plotdata.csv', stringsAsFactors=F)
+
+
 
 #ped_data = subset(ped_data, gender!='unknown')
 
 # suse code
 ped2 <- melt(ped_data, id.vars=c("id"), measure.vars=c("dam", "sire"))
-ped2 <- ped2[-which(is.na(ped2$value)),]
+head(ped2)
 
 names(ped2)[which(names(ped2) == "value")] <- "parent_id"
 ped2$Group <- 1:nrow(ped2)
+
 
 ped3 <- melt(ped2, id.vars = "Group", measure.vars=c("id", "parent_id"))
 
@@ -78,7 +82,7 @@ png('sal_dam_sires.png', width=20, height=6, units='in', res=320)
 
 birthyears <- sort(unique(ped3$birth_year))
 
-ggplot(ped3, aes(x, -birth_year, colour=gender)) +
+ggplot(ped3, aes(x, -as.numeric(birth_year), colour=gender)) +
   geom_line(aes(group = Group), alpha = 0.1, colour='darkgrey') +
   geom_point() +
   theme_bw() +
