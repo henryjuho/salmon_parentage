@@ -26,6 +26,20 @@ generateXcoord <- function(size){
 
 ped_data = read.csv('uts_ped_split_parents_plotdata.csv', stringsAsFactors=F)
 
+# dam info for sorting
+sire_by_offspring = subset(ped_data, select=c('sire', 'dam'))
+colnames(sire_by_offspring) = c('id', 'dam_id')
+sire_by_offspring = dplyr::distinct(sire_by_offspring, id, .keep_all = TRUE)
+
+# age info for sorting
+par_by_offyear = subset(ped_data, select=c('sire', 'birth_year'))
+colnames(par_by_offyear) = c('id', 'off_year')
+par_by_offyear = dplyr::distinct(par_by_offyear, id, .keep_all = TRUE)
+par_by_offyear2 = subset(ped_data, select=c('dam', 'birth_year'))
+colnames(par_by_offyear2) = c('id', 'off_year')
+par_by_offyear2 = dplyr::distinct(par_by_offyear2, id, .keep_all = TRUE)
+
+par_by_offyear = rbind(par_by_offyear, par_by_offyear2)
 
 
 #ped_data = subset(ped_data, gender!='unknown')
@@ -55,16 +69,26 @@ for(i in sort(unique(ped3$birth_year))){
   # Extract the number of Unique IDs per year and generate X coords
   ids  <- unique(ped3$id[which(ped3$birth_year == i)])
 
-  newx <- generateXcoord(length(ids)) # generate X coordinates
-
   # Append to xcoords
   new_dat = data.frame(id = ids)
   new_dat = dplyr::left_join(new_dat, subset(ped_data, select=c('id', 'dam', 'sire', 'gender')))
-  if(z==-1 | z==5){
-    new_dat = arrange(new_dat, gender, id)
+  new_dat = dplyr::left_join(new_dat, sire_by_offspring, by='id')
+  new_dat = dplyr::left_join(new_dat, par_by_offyear, by='id')
+
+  if(z==-1){
+    new_dat = drop_na(new_dat, off_year)
+    new_dat = arrange(new_dat, off_year, dam_id)
+    newx <- generateXcoord(length(new_dat$id)) # generate X coordinates
     new_dat$x = newx * 5
-  }else{
-    new_dat = arrange(new_dat, dam, sire)
+  }else if(z==5){
+    new_dat = drop_na(new_dat, off_year)
+    new_dat = arrange(new_dat, off_year, id)
+    newx <- generateXcoord(length(new_dat$id)) # generate X coordinates
+    new_dat$x = newx * 5
+  }
+  else{
+    new_dat = arrange(new_dat, dam)
+    newx <- generateXcoord(length(new_dat$id)) # generate X coordinates
     new_dat$x = newx + z
   }
   z = z + 1
@@ -86,7 +110,8 @@ ggplot(ped3, aes(x, -as.numeric(birth_year), colour=gender)) +
   geom_line(aes(group = Group), alpha = 0.1, colour='darkgrey') +
   geom_point() +
   theme_bw() +
-  theme(legend.position=c(0.05, 0.35),
+  theme(legend.position=c(0.03, 0.75),
+        legend.background=element_blank(),
         legend.title     = element_blank(),
         axis.text.x      = element_blank(),
         axis.text.y      = element_text(colour = "darkgrey"),
