@@ -103,12 +103,12 @@ def main():
 
     col_dat = []
     for y in args.in_dat:
-        col_dat += open(y).readlines()
+        col_dat += open(y).readlines()[1:]
 
     gender_dict = get_gender(args.geno)
 
     # get unique parent ids
-    parent_ids = [x.split()[1:3] for x in col_dat[1:]]
+    parent_ids = [x.split()[1:3] for x in col_dat]
     unique_parents = []
     for pair in parent_ids:
         for indiv in pair:
@@ -116,12 +116,12 @@ def main():
                 unique_parents.append(indiv)
 
     # set of offspring ids
-    offspring_ids = set([x.split()[0] for x in col_dat[1:]])
+    offspring_ids = set([x.split()[0] for x in col_dat])
 
     print('id', 'dam', 'sire', 'birth_year', 'gender', sep=',')
 
     # print offspring
-    for line in col_dat[1:]:
+    for line in col_dat:
         line = line.split()
 
         # check if dup
@@ -132,7 +132,7 @@ def main():
         if line[0] in gender_dict.keys():
             gender = gender_dict[line[0]]
         else:
-            gender = 'NA'
+            gender = 'unknown'
 
         # get birth year estimate
         birth_year = estimate_birth_year(line[0])
