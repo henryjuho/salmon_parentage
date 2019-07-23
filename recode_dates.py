@@ -10,8 +10,10 @@ def fish_cat(fish_id, gender):
     if gender == 'unknown':
         if 'GP' in fish_id:
             return 'g'
+        elif 'Y' in fish_id:
+            return 'u_off'
         else:
-            return None
+            return 'u_p'
 
     # get young
     if 'Y' in fish_id:
@@ -26,12 +28,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f_off', help='recode female offspring', default='actual')
     parser.add_argument('-m_off', help='recode male offspring', default='actual')
+    parser.add_argument('-u_off', help='recode unknown offspring', default='actual')
     parser.add_argument('-f_p', help='recode female parents', default='actual')
     parser.add_argument('-m_p', help='recode male parents', default='actual')
+    parser.add_argument('-u_p', help='recode unknown parents', default='actual')
     parser.add_argument('-g', help='recode grand parents', default='actual')
     args = parser.parse_args()
 
-    recode_dict = {'f_off': args.f_off, 'm_off': args.m_off, 'f_p': args.f_p, 'm_p': args.m_p, 'g': args.g}
+    recode_dict = {'f_off': args.f_off, 'm_off': args.m_off, 'u_off': args.u_off,
+                   'f_p': args.f_p, 'm_p': args.m_p, 'u_p': args.u_p, 'g': args.g}
 
     for line in sys.stdin:
 
