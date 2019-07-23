@@ -9,7 +9,10 @@ def fish_cat(fish_id, gender):
     # catch ambig gender
     if gender == 'unknown':
         if 'GP' in fish_id:
-            return 'g'
+            if '*' in fish_id:
+                return 'm_g'
+            else:
+                return 'f_g'
         elif 'Y' in fish_id:
             return 'u_off'
         else:
@@ -32,11 +35,13 @@ def main():
     parser.add_argument('-f_p', help='recode female parents', default='actual')
     parser.add_argument('-m_p', help='recode male parents', default='actual')
     parser.add_argument('-u_p', help='recode unknown parents', default='actual')
-    parser.add_argument('-g', help='recode grand parents', default='actual')
+    parser.add_argument('-f_g', help='recode female grand parents', default='actual')
+    parser.add_argument('-m_g', help='recode male grand parents', default='actual')
     args = parser.parse_args()
 
     recode_dict = {'f_off': args.f_off, 'm_off': args.m_off, 'u_off': args.u_off,
-                   'f_p': args.f_p, 'm_p': args.m_p, 'u_p': args.u_p, 'g': args.g}
+                   'f_p': args.f_p, 'm_p': args.m_p, 'u_p': args.u_p,
+                   'f_g': args.f_g, 'm_g': args.m_g}
 
     for line in sys.stdin:
 
