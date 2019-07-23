@@ -93,7 +93,7 @@ year was estimated based on ID, adults were arbitrarily assigned a 5 year stint 
 Pedigree with reconstructed grand parents:
 
 ```bash
-cat uts_ped.csv | python recode_dates.py -f_off 2 -m_off 2 -u_off 2 -f_p 1 -m_p 1 -u_p 1 -g 0 | grep -v ^* | grep -v ^# > uts_ped_gens_plot.csv 
+cat uts_ped.csv | python recode_dates.py -f_off 2 -m_off 2 -u_off 2 -f_p 1 -m_p 1 -u_p 1 -f_g 0 -m_g 0 | grep -v ^* | grep -v ^# > uts_ped_gens_plot.csv 
 Rscript plot_ped.R 
 ```
 
@@ -102,7 +102,7 @@ Rscript plot_ped.R
 Mothers and fathers split for clarity:
 
 ```bash
-cat uts_ped.csv | python recode_dates.py -f_p 2022 -m_p 2008 -g rm | grep -v ^* | grep -v ^# > uts_ped_split_parents_plotdata.csv
+cat uts_ped.csv | python recode_dates.py -f_p 2022 -m_p 2008 -f_g rm m_g rm | grep -v ^* | grep -v ^# > uts_ped_split_parents_plotdata.csv
 Rscript plot_dam_sire_off.R 
 ```
 
@@ -111,5 +111,8 @@ Rscript plot_dam_sire_off.R
 Grandparents and parents:
 
 ```bash
-
+cat uts_ped.csv | python recode_dates.py -f_off rm -m_off rm -u_off rm -f_p 1 -m_p 1 -u_p 1 -m_g 0 -f_g 2 | grep -v ^* | grep  -v ^# > uts_ped_gp_v_p.csv
+Rscript plot_grandparents.R
 ```
+
+![](sal_grandparents.png)
