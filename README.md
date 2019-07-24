@@ -25,9 +25,9 @@ a per locus error rate: [marker_summary.csv](marker_summary.csv). The cleaned da
 Input ```.dat``` files for colony was generated as follows:
 
 ```bash
-python create_dat_file.py -geno uts_sal_allruns.filtered.csv -marks marker_summary.csv > uts_salmon.dat
 python create_dat_file.py -geno uts_sal_allruns.filtered.csv -marks marker_summary.csv > uts_salmon_mediumrun.dat
 python create_adult_dat.py -geno uts_sal_allruns.filtered.csv -marks marker_summary.csv > uts_salmon_adults_mediumrun.dat
+python create_juv_v_juv_dat_files.py -geno uts_sal_allruns.filtered.csv -marks marker_summary.csv -run_length 2 -precision 1 
 ```
 
 ## Running Colony2
@@ -73,6 +73,17 @@ mkdir /fastdata/bop15hjb/sal_colony_adults_medium
 ./run_colony.py -in_dat /home/bop15hjb/salmon_parentage/uts_salmon_adults_mediumrun.dat -np 24 -out_dir /fastdata/bop15hjb/sal_colony_adults_medium/
 cp /fastdata/bop15hjb/sal_colony_adults_medium/uts_salmon_adults.BestConfig_Ordered ./
 cat uts_salmon_adults.BestConfig_Ordered | python add_reconstuct_prefix.py gp > uts_salmon_adults.BestConfig_Ordered.uniquenames.txt
+```
+
+### Juveniles vs Juveniles 
+
+May cause a problem with fullsibs being assigned as parents?
+
+```bash
+mkdir /fastdata/bop15hjb/sal_colony_mat_par_medium
+./run_colony.py -in_dat /home/bop15hjb/salmon_parentage/uts_salmon_juv_2013.dat -np 28 -out_dir /fastdata/bop15hjb/sal_colony_mat_par_medium/
+./run_colony.py -in_dat /home/bop15hjb/salmon_parentage/uts_salmon_juv_2014.dat -np 24 -out_dir /fastdata/bop15hjb/sal_colony_mat_par_medium/ 
+./run_colony.py -in_dat /home/bop15hjb/salmon_parentage/uts_salmon_juv_2015.dat -np 20 -out_dir /fastdata/bop15hjb/sal_colony_mat_par_medium/ 
 ```
 
 ### Processing and Cleaning
