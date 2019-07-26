@@ -11,8 +11,9 @@ def main():
         line = line.rstrip().split()
 
         # print header only once
-        if 'Offspring' in line[0] and counter == 1:
-            print('\t'.join(line))
+        if 'Offspring' in line[0]:
+            if counter == 1:
+                print('\t'.join(line))
             continue
 
         father, mother = line[1:3]
