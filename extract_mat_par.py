@@ -11,7 +11,7 @@ def main():
         line = line.rstrip().split()
 
         # print header only once
-        if counter == 1:
+        if line[0].startswith('Off') and counter == 1:
             print('\t'.join(line))
             continue
 
