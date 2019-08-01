@@ -18,9 +18,19 @@ python snp_data_prep.py
 
 The raw data from Kenyon was preprocessed to extract UTS samples and male controls. Loci with more than 40% 'NA's were 
 removed, along with the SDY locus, list of removed loci: [removed_loci.csv](removed_loci.csv). Individuals with more than
-60% missing genotypes were also removed: [removed_indivs.csv](removed_indivs.csv). The male controls were used to estimate
+60% missing genotypes were also removed: [removed_indivs.csv](removed_indivs.csv). A list of all samples processed: 
+[all_samples_process.txt](all_samples_process.txt). The male controls were used to estimate
 a per locus error rate: [marker_summary.csv](marker_summary.csv). The cleaned data was written to: 
 [uts_sal_allruns.filtered.csv](uts_sal_allruns.filtered.csv).
+
+Failed samples were summarised:
+
+```bash
+python sample_success_summary.py > sample_success_data.csv
+Rscript sample_success_heatmap.R 
+```
+<img src="sample_heatmap.png" width=500 height=600>
+
 
 Input ```.dat``` files for colony was generated as follows:
 
