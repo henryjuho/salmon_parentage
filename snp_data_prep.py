@@ -127,6 +127,8 @@ def main():
     uts_samples = []
     low_call_ids = []
 
+    samples_processed = open('all_samples_process.txt', 'w')
+
     # process all runs
     for run in sets:
 
@@ -169,6 +171,8 @@ def main():
                 except AttributeError:
                     continue  # this should skip all non uts, non male control samples
 
+            print(fish_id, file=samples_processed)
+
             reformed_line = [fish_id] + geno_calls
 
             # filter samples with many NAs and output list of IDs, run and percent NAs
@@ -180,6 +184,8 @@ def main():
 
             # add ok UTS samples to list
             uts_samples.append(reformed_line)
+
+    samples_processed.close()
 
     # output indiv removed
     with open('removed_indivs.csv', 'w') as rm_ids:
