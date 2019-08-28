@@ -1,5 +1,10 @@
 def extact_uts(csv):
 
+    """
+    gets uts trios from microsat ped
+    :param csv: str
+    :return: list
+    """
     uts_sal = []
 
     for line in open(csv):
@@ -39,6 +44,13 @@ def extact_uts(csv):
 
 def get_snp_ped_matches(snp_csv, micro_ids):
 
+    """
+    gets fish from snp ped that were also in microsat one
+    :param snp_csv: str
+    :param micro_ids: set
+    :return: dict
+    """
+
     snp_ped_dict = {}
 
     for line in open(snp_csv):
@@ -66,25 +78,85 @@ def get_snp_ped_matches(snp_csv, micro_ids):
 
 def main():
 
-    micro_ped = 'ParentageAssignments_microsat.csv'
-    micro_sat_trios = extact_uts(micro_ped)
-    off_ids = {x[0] for x in micro_sat_trios}
+    with open('microsat_snp_parentage_comparison.csv', 'w') as raw_out:
+        micro_ped = 'ParentageAssignments_microsat.csv'
+        micro_sat_trios = extact_uts(micro_ped)
+        off_ids = {x[0] for x in micro_sat_trios}
 
-    # loop through microsat ids and extract corresponding ids from snp ped
-    snp_ped = 'uts_ped.csv'
-    matching_snp_ids = get_snp_ped_matches(snp_ped, off_ids)
+        # loop through microsat ids and extract corresponding ids from snp ped
+        snp_ped = 'uts_ped.csv'
+        matching_snp_ids = get_snp_ped_matches(snp_ped, off_ids)
 
-    print('offspring', 'microsat_dam', 'microsat_sire', 'snp_dam', 'snp_sire')
+        print('offspring', 'microsat_dam', 'microsat_sire', 'snp_dam', 'snp_sire', sep=',', file=raw_out)
 
-    for trio in micro_sat_trios:
+        n_micro_off = 0
+        n_miss_snp = 0
+        n_in_both = 0
+        n_parents_agree = 0
+        n_par_only_in_micro = 0
+        n_par_only_in_snp = 0
+        snp_unassigned = 0
+        micro_unassigned = 0
 
-        try:
-            snp_dat = matching_snp_ids[trio[0]]
-        except KeyError:
-            snp_dat = ['id_miss', 'id_miss']
+        for trio in micro_sat_trios:
 
-        out_dat = trio + snp_dat
-        print(*out_dat)
+            n_micro_off += 1
+
+            try:
+                snp_dat = matching_snp_ids[trio[0]]
+                n_in_both += 1
+
+            except KeyError:
+                n_miss_snp += 1
+                snp_dat = ['id_miss', 'id_miss']
+
+            out_dat = trio + snp_dat
+            print(*out_dat, sep=',', file=raw_out)
+
+            # check parent agreement
+            micro_dat = trio[1:]
+            snp_unassigned += snp_dat.count('NA')
+            micro_unassigned += micro_dat.count('NA')
+
+            micro_pars = [x for x in micro_dat if x != 'NA']
+            snp_pars = [x for x in snp_dat if x != 'NA' and x != 'id_miss']
+
+            if len(micro_pars + snp_pars) == 0:
+                continue
+
+            # parents agree
+            if sorted(micro_pars) == sorted(snp_pars):
+                if len(micro_pars) == 1:
+                    n_parents_agree += 1
+                elif len(micro_pars) == 2:
+                    n_parents_agree += 2
+
+            else:
+
+                # unique parents
+                for y in micro_pars:
+                    if y not in snp_pars:
+                        n_par_only_in_micro += 1
+                    else:
+                        n_parents_agree += 1
+
+                for y in snp_pars:
+                    if y not in micro_pars:
+                        n_par_only_in_snp += 1
+
+    # summary output
+    n_micro_pars = (n_micro_off * 2) - micro_unassigned
+    n_snp_pars = (n_in_both * 2) - snp_unassigned
+
+    summary = ('|Category | Count | Proportion |\n'
+               '|:--------|:-----:|:-------:|\n'
+               '| uts offspring in microsats | ' + str(n_micro_off) + ' | 1.000 |\n'
+               '| uts offspring also in snp  | ' + str(n_in_both) + ' | ' + str(round(n_in_both/n_micro_off, 3)) + ' |\n'
+               '| microsat parents assigned  | ' + str(n_micro_pars) + ' |' + str(round(n_micro_pars/(2*n_micro_off), 3)) + '|\n'
+               '| snp parents assigned       | ' + str(n_snp_pars) + ' | ' + str(round(n_snp_pars/(2*n_in_both), 3)) + '|\n'
+               '| parent agreement        | ' + str(n_parents_agree) + '|' + str(round(n_parents_agree/n_snp_pars, 3)) + '|\n')
+
+    print(summary)
 
 
 if __name__ == '__main__':
