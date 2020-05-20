@@ -3,8 +3,8 @@ library(viridis)
 
 success = read.csv('sample_success_data.csv')
 
-success$age = factor(success$age, levels=c('A', '0y', '1y', '2y', '3y'))
-success$catch_year =factor(success$catch_year, levels=rev(c('11', '12', '13', '14', '15', '16', '17', '18')))
+success$age = factor(success$age, levels=c('A', '0y', '1y', '2y', '2-3y', '3y'))
+success$catch_year =factor(success$catch_year, levels=rev(c('11', '12', '13', '14', '15', '16', '17', '18', '19')))
 
 png('sample_heatmap.png', width=5, height=6, res=320, units='in')
 

@@ -3,11 +3,12 @@
 import re
 
 
-def clean_data(sample_dat, filtered_out, clean_out):
+def clean_data(sample_dat, ld_markers, filtered_out, clean_out):
 
     """
     removes bad loci and specified loci
     :param sample_dat: list
+    :param ld_markers: list
     :param filtered_out: str
     :param clean_out: str
     :return: None
@@ -39,7 +40,9 @@ def clean_data(sample_dat, filtered_out, clean_out):
 
             # VIP = vgll3_Top, vgll3_mis1, vgll3, mis2, vgll3_topAlt, also SDY_ion2
             # filter specific loci here
-            if snp_id in []:
+            markers_toremove = [] + ld_markers
+
+            if snp_id in markers_toremove:
                 print(snp_id, percent_na, sep=',', file=removed_snps)
                 continue
 
@@ -114,14 +117,9 @@ def transpose_geno_data(data_list):
 
 def main():
 
-    # raw run data
-    set_1 = open('sal_parentage/GenoScoreNUM_NextSeq-20190416.txt').readlines()
-    set_3 = open('sal_parentage/GenoScoreNUM_Annukka_set3_NextSeq-20190619.txt').readlines()
-
-    # check header order
-    assert set_1[0] == set_3[0]
-
-    sets = [(1, set_1), (3, set_3)]
+    # data from Kenyon
+    km_data = open('UtsSNPMasterDataKM_20.04.17.csv')
+    linked_markers = [x.rstrip() for x in open('linked_markers_toremove.txt')]
 
     male_controls = []
     uts_samples = []
@@ -130,60 +128,63 @@ def main():
     samples_processed = open('all_samples_process.txt', 'w')
 
     # process all runs
-    for run in sets:
 
-        for line in run[1]:
+    for line in km_data:
 
-            line = line.rstrip().split('\t')
+        line = line.rstrip().split(',')
 
-            # skip header
-            if line[0].startswith('AKAP11_4'):
-                if run[0] == 1:
-                    header = [''] + line
-                    male_controls.append(header)
-                    uts_samples.append(header)
-                continue
+        # skip header
+        if line[0].startswith('run'):
 
-            id_info = line[0].replace('O', '0')
-            geno_calls = line[1:]
+            header = [''] + line[6:]
+            male_controls.append(header)
+            uts_samples.append(header)
+            continue
 
-            # catch water controls
-            if re.search(r'(?i)water', id_info):
-                continue
+        sample_info = line[0:6]
+        run_name, run, life_stage, year, id_info, class_var = sample_info
+        id_info = id_info.replace('O', '0')
 
-            # extract male controls
-            if 'Male' in id_info:
-                male_controls.append(line)
-                continue
+        geno_calls = line[6:]
 
-            # extract uts ids - have uts1 - uts54 - 2011 adults
-            id_str = re.compile(r'(?i)(UTS_\d{2}A?_\d{,3}y?_?\d{,4})')
-            id_strb = re.compile(r'(?i)(UTS\d{2})')
+        # catch water controls
+        if re.search(r'(?i)water', id_info):
+            continue
 
-            try:
-                fish_id = re.search(id_str, id_info).group().rstrip('_')
+        # extract male controls
+        if 'Male' in id_info:
+            male_controls.append(line)
+            continue
 
-            except AttributeError:
+        # extract uts ids - have uts1 - uts54 - 2011 adults
+        # id_str = re.compile(r'(?i)(UTS_\d{2}A?_\d{,3}y?_?\d{,4})')
+        # id_strb = re.compile(r'(?i)(UTS\d{2})')
 
-                try:  # this is for 2011 weirdly named samples
-                    fish_id = re.search(id_strb, id_info).group().rstrip('_')
+        # try:
+        #     fish_id = re.search(id_str, id_info).group().rstrip('_')
+        #
+        # except AttributeError:
+        #
+        #     try:  # this is for 2011 weirdly named samples
+        #         fish_id = re.search(id_strb, id_info).group().rstrip('_')
+        #
+        #     except AttributeError:
+        #         continue  # this should skip all non uts, non male control samples
+        fish_id = id_info
 
-                except AttributeError:
-                    continue  # this should skip all non uts, non male control samples
+        print(fish_id, file=samples_processed)
 
-            print(fish_id, file=samples_processed)
+        reformed_line = [fish_id] + geno_calls
 
-            reformed_line = [fish_id] + geno_calls
+        # filter samples with many NAs and output list of IDs, run and percent NAs
+        percent_na = geno_calls.count('NA') / float(len(geno_calls))
+        if percent_na > 0.6:
+            fail_info = (fish_id, run[0], percent_na)
+            low_call_ids.append(fail_info)
+            continue
 
-            # filter samples with many NAs and output list of IDs, run and percent NAs
-            percent_na = geno_calls.count('NA') / float(len(geno_calls))
-            if percent_na > 0.6:
-                fail_info = (fish_id, run[0], percent_na)
-                low_call_ids.append(fail_info)
-                continue
-
-            # add ok UTS samples to list
-            uts_samples.append(reformed_line)
+        # add ok UTS samples to list
+        uts_samples.append(reformed_line)
 
     samples_processed.close()
 
@@ -195,10 +196,11 @@ def main():
             print(*indiv, sep=',', file=rm_ids)
 
     # summarise markers from controls
-    review_control(male_controls, 'marker_summary.csv')
+    # review_control(male_controls, 'marker_summary.csv')
 
-    # now clean up data - remove low success loci
-    clean_data(uts_samples, filtered_out='removed_loci.csv', clean_out='uts_sal_allruns.filtered.csv')
+    # now clean up data - remove low success loci and linked loci
+    clean_data(uts_samples, ld_markers=linked_markers,
+               filtered_out='removed_loci.csv', clean_out='uts_sal_allruns.filtered.csv')
 
 
 if __name__ == '__main__':

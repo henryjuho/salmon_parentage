@@ -2,6 +2,7 @@
 
 ## Data prep
 
+<!---
 Data location: ```/home/DATA/salmon_parentage_analysis```
 
 Files used: ``` GenoScoreNUM_Annukka_set3_NextSeq-20190619.txt```, ```GenoScoreNUM_NextSeq-20190416.txt```
@@ -9,19 +10,48 @@ Files used: ``` GenoScoreNUM_Annukka_set3_NextSeq-20190619.txt```, ```GenoScoreN
 ```bash
 ln -s /home/DATA/salmon_parentage_analysis sal_parentage
 ```
+--->
 
-The data was prepared with:
+Linked loci were identified:
+
+```shell script
+Rscript id_linked_markers.R
+```
+
+Output:
+```
+                  Locus1             Locus2         r
+30276           AKAP11_4 c25_684F_713R_SACa 0.6707056
+30451           AKAP11_4 c25_684F_713R_SACb 0.6707056
+352        UtagF_SS_147a      UtagF_SS_148c 0.8591055
+702        UtagF_SS_147a       c25_1441_SAC 0.6869916
+703        UtagF_SS_148c       c25_1441_SAC 0.8386358
+25413              X21_1             TN_301 0.6313258
+30624 c25_684F_713R_SACa c25_684F_713R_SACb 0.9997098
+```
+
+Second column markers flagged for removal
+
+```shell script
+printf 'c25_684F_713R_SACa\nc25_684F_713R_SACb\nUtagF_SS_148c\nc25_1441_SAC\nTN_301\n' > linked_markers_toremove.txt
+```
+
+The data was then prepared with:
 
 ```bash
 python snp_data_prep.py
 ```
 
-The raw data from Kenyon was preprocessed to extract UTS samples and male controls. Loci with more than 40% 'NA's were 
-removed, along with the SDY locus, list of removed loci: [removed_loci.csv](removed_loci.csv). Individuals with more than
+The data from Kenyon was preprocessed to remove loci with more than 40% 'NA's, and those identified above, 
+list of removed loci: [removed_loci.csv](removed_loci.csv). Individuals with more than
 60% missing genotypes were also removed: [removed_indivs.csv](removed_indivs.csv). A list of all samples processed: 
-[all_samples_process.txt](all_samples_process.txt). The male controls were used to estimate
-a per locus error rate: [marker_summary.csv](marker_summary.csv). The cleaned data was written to: 
+[all_samples_process.txt](all_samples_process.txt). The cleaned data was written to: 
 [uts_sal_allruns.filtered.csv](uts_sal_allruns.filtered.csv).
+
+<!---
+The male controls were used to estimate a per locus error rate: [marker_summary.csv](marker_summary.csv). The cleaned data was written to: 
+[uts_sal_allruns.filtered.csv](uts_sal_allruns.filtered.csv).
+--->
 
 Failed samples were summarised:
 
@@ -31,6 +61,8 @@ Rscript sample_success_heatmap.R
 ```
 <img src="sample_heatmap.png" width=500 height=600>
 
+
+## Generating input files 
 
 Input ```.dat``` files for colony was generated as follows:
 
