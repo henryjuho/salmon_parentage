@@ -169,3 +169,23 @@ Rscript plot_grandparents.R
 ```
 
 ![](sal_grandparents.png)
+
+## Comparison to previous microsat parentage assignment
+
+Previous data here: [ParentageAssignments_microsat.csv](ParentageAssignments_microsat.csv)
+
+```bash
+python compare_to_microsat_ped.py 
+```
+|Category | Count | Proportion |
+|:--------|:-----:|:-------:|
+| uts offspring in microsats | 5223 | 1.000 |
+| uts offspring also in snp  | 188 | 0.036 |
+| microsat parents assigned  | 2314 |0.222|
+| snp parents assigned       | 62 | 0.165|
+| parent agreement        | 57|0.919|
+
+Comparison csv file of offspring in both datasets: [microsat_snp_parentage_comparison.csv](microsat_snp_parentage_comparison.csv)
+
+
+ 
