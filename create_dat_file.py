@@ -103,6 +103,10 @@ def colony_geno_dat(geno_file_name):
     # process genotype data for offspring, male candidates, female candidates
     for line in genos[1:]:
 
+        # catch empty lines from Kenyons original csv
+        if ',,,,,,,,,,,,,,,,' in line:
+            continue
+
         line = line.rstrip().split(',')
         fish = line[0]
 
