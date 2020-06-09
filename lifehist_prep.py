@@ -3,39 +3,47 @@
 
 def main():
 
-    id_info = 'sal_parentage/SNPgeno_janlaine_IDs_020818_colfix.csv'
+    id_info = 'uts_sal_allruns.filtered.csv'
 
     # reformat id file
 
     # sex_codes: 1 = female,  2 = male,  3=unknown,  4=hermaphrodites,  all other numbers,letters, or NA
     sexes = {'M': 2, 'F': 1, 'NA': 'NA'}
 
-    with open('sal_parentage/sal_lifehist_sequoia.csv', 'w') as lifehist:
+    with open('uts_sal_allruns.filtered_lifehist.csv', 'w') as lifehist:
 
         print('ID', 'Sex', 'BirthYear', sep=',', file=lifehist)
         for line in open(id_info):
 
             # skip header
-            if line.startswith('ID'):
+            if line.startswith(','):
                 continue
 
             # extract columns needed
             line = line.split(',')
             fish_id = line[0]
-            sex = sexes[line[8]]
+            sdy = line[4]
+
+            # assign sex
+            if sdy == '1':
+                sex = 'M'
+            elif sdy == '0':
+                sex = 'F'
+            else:
+                sex = 'NA'
+
+            sex = sexes[sex]
 
             # calculate birth year
-            age = line[6]
-            if 'SW' in age:
+            catch_year = fish_id.split('_')[1]
+
+            if 'A' in catch_year:
                 # age = 5 + int(age.replace('SW', ''))
-                age = 5
+                birth_approx = (int(catch_year.replace('A', '')) + 2000) - 5
             else:
-                age = int(age)
+                birth_approx = int(catch_year) + 2000
 
-            year = int(line[7])
-            birth_year = year - age
-
-            print(fish_id, sex, birth_year, sep=',', file=lifehist)
+            print(fish_id, sex, birth_approx, sep=',', file=lifehist)
 
 
 if __name__ == '__main__':
