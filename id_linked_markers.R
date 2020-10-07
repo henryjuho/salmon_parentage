@@ -12,14 +12,14 @@ recode_geno <- function (geno){
     else{return(NA)}
 }
 
-genos <- read.csv('UtsSNPMasterDataKM_20.04.17.csv')
-
+args <- commandArgs(trailingOnly=TRUE)
+genos <- read.csv(args[1])
 
 #str(genos)
 #levels(genos$class)
 #levels(genos$type)
 
-markers <- genos[,7:ncol(genos)]
+markers <- genos[,8:ncol(genos)]
 
 #str(markers)
 
