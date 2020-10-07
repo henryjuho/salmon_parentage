@@ -118,7 +118,7 @@ def transpose_geno_data(data_list):
 def main():
 
     # data from Kenyon
-    km_data = open('UtsSNPMasterDataKM_20.04.17.csv')
+    km_data = open('UtsSNPMasterDataKM_20.09.09.csv')
     linked_markers = [x.rstrip() for x in open('linked_markers_toremove.txt')]
 
     male_controls = []
@@ -136,16 +136,16 @@ def main():
         # skip header
         if line[0].startswith('run'):
 
-            header = [''] + line[6:]
+            header = [''] + line[7:]
             male_controls.append(header)
             uts_samples.append(header)
             continue
 
-        sample_info = line[0:6]
-        run_name, run, life_stage, year, id_info, class_var = sample_info
+        sample_info = line[0:7]
+        run_name, run, life_stage, year, id_info, class_var, notes = sample_info
         id_info = id_info.replace('O', '0')
 
-        geno_calls = line[6:]
+        geno_calls = line[7:]
 
         # catch water controls
         if re.search(r'(?i)water', id_info):
@@ -178,7 +178,7 @@ def main():
 
         # filter samples with many NAs and output list of IDs, run and percent NAs
         percent_na = geno_calls.count('NA') / float(len(geno_calls))
-        if percent_na > 0.6:
+        if percent_na > 0.2:
             fail_info = (fish_id, run[0], percent_na)
             low_call_ids.append(fail_info)
             continue
