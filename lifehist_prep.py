@@ -1,9 +1,35 @@
 #!/usr/bin/env python
 
+import csv
+
+
+def adult_age(age_file):
+
+    adult_ages = {}
+    with open(age_file, encoding="latin-1") as age_csv:
+        for line in csv.reader(age_csv, delimiter=","):
+            if line[0] == '':
+                continue
+
+            smolt_age, sea_age = line[14:16]
+
+            if smolt_age == 'NA' or sea_age == 'NA':
+                continue
+
+            age = int(smolt_age) + int(sea_age)
+            fish_id = line[1].replace('"', '')
+
+            adult_ages[fish_id] = age
+
+    return adult_ages
+
 
 def main():
 
     id_info = 'uts_sal_allruns.filtered.csv'
+    adult_ages = 'Utsadults_20.04.20.csv'
+
+    adult_dict = adult_age(adult_ages)
 
     # reformat id file
 
@@ -39,9 +65,15 @@ def main():
 
             if 'A' in catch_year:
                 # age = 5 + int(age.replace('SW', ''))
-                birth_approx = (int(catch_year.replace('A', '')) + 2000) - 5
+                # birth_approx = (int(catch_year.replace('A', '')) + 2000) - 5
+                try:
+                    birth_approx = (int(catch_year.replace('A', '')) + 2000) - adult_dict[fish_id]
+                except KeyError:
+                    birth_approx = 'NA'
+
             else:
-                birth_approx = int(catch_year) + 2000
+                juv_age = int(fish_id.split('_')[2].replace('y', '').replace('pp', '').replace('-3', ''))
+                birth_approx = int(catch_year) + 2000 - juv_age
 
             print(fish_id, sex, birth_approx, sep=',', file=lifehist)
 
