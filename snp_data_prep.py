@@ -1,6 +1,8 @@
 #!/usr/env/bin python
 
 import re
+import sys
+import datetime
 
 
 def clean_data(sample_dat, ld_markers, filtered_out, clean_out):
@@ -118,14 +120,16 @@ def transpose_geno_data(data_list):
 def main():
 
     # data from Kenyon
-    km_data = open('UtsSNPMasterDataKM_20.09.09.csv')
+    km_data = open(sys.argv[1])
     linked_markers = [x.rstrip() for x in open('linked_markers_toremove.txt')]
 
     male_controls = []
     uts_samples = []
     low_call_ids = []
 
-    samples_processed = open('all_samples_process.txt', 'w')
+    date = str(datetime.date.today())
+
+    samples_processed = open(date + '.all_samples_process.txt', 'w')
 
     # process all runs
 
@@ -179,7 +183,7 @@ def main():
         # filter samples with many NAs and output list of IDs, run and percent NAs
         percent_na = geno_calls.count('NA') / float(len(geno_calls))
         if percent_na > 0.2:
-            fail_info = (fish_id, run[0], percent_na)
+            fail_info = (fish_id, run, percent_na)
             low_call_ids.append(fail_info)
             continue
 
@@ -189,7 +193,7 @@ def main():
     samples_processed.close()
 
     # output indiv removed
-    with open('removed_indivs.csv', 'w') as rm_ids:
+    with open(date + '.removed_indivs.csv', 'w') as rm_ids:
 
         print('ID', 'run', 'proportion_NA', sep=',', file=rm_ids)
         for indiv in low_call_ids:
@@ -200,7 +204,7 @@ def main():
 
     # now clean up data - remove low success loci and linked loci
     clean_data(uts_samples, ld_markers=linked_markers,
-               filtered_out='removed_loci.csv', clean_out='uts_sal_allruns.filtered.csv')
+               filtered_out=date + '.removed_loci.csv', clean_out=date + '.uts_sal_allruns.filtered.csv')
 
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import csv
+import argparse
+import datetime
 
 
 def adult_age(age_file):
@@ -26,8 +28,15 @@ def adult_age(age_file):
 
 def main():
 
-    id_info = 'uts_sal_allruns.filtered.csv'
-    adult_ages = 'Utsadults_20.04.20.csv'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-filtered_csv', help='Filtered csv file from snp_data_prep.py', required=True)
+    parser.add_argument('-adult_csv', help='CSV with adult age estimates', required=True)
+    args = parser.parse_args()
+
+    date = str(datetime.date.today())
+
+    id_info = args.filtered_csv
+    adult_ages = args.adult_csv
 
     adult_dict = adult_age(adult_ages)
 
@@ -36,7 +45,7 @@ def main():
     # sex_codes: 1 = female,  2 = male,  3=unknown,  4=hermaphrodites,  all other numbers,letters, or NA
     sexes = {'M': 2, 'F': 1, 'NA': 'NA'}
 
-    with open('uts_sal_allruns.filtered_lifehist.csv', 'w') as lifehist:
+    with open(date + '.uts_lifehist.csv', 'w') as lifehist:
 
         print('ID', 'Sex', 'BirthYear', sep=',', file=lifehist)
         for line in open(id_info):
@@ -69,7 +78,7 @@ def main():
                 try:
                     birth_approx = (int(catch_year.replace('A', '')) + 2000) - adult_dict[fish_id]
                 except KeyError:
-                    birth_approx = 'NA'
+                    birth_approx = (int(catch_year.replace('A', '')) + 2000) - 6
 
             else:
                 juv_age = int(fish_id.split('_')[2].replace('y', '').replace('pp', '').replace('-3', ''))

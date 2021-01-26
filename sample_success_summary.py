@@ -1,10 +1,12 @@
 import itertools
+import sys
 
 
 def main():
 
-    smaples_processed = 'all_samples_process.txt'
-    failed = set([x.split(',')[0] for x in open('removed_indivs.csv') if not x.startswith('ID')])
+    smaples_processed = sys.argv[1]
+    failed = sys.argv[2]
+    failed = set([x.split(',')[0] for x in open(failed) if not x.startswith('ID')])
 
     success_matrix = {}
 
