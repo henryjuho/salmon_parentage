@@ -61,7 +61,8 @@ def main():
             sires[sire][year][age] += 1
 
     # output plot csv
-    print('id', 'offspring_year', 'offspring_age_class', 'parent_type', 'parent_year', 'parent_age_class', sep=',')
+    print('id', 'offspring_year', 'offspring_age_class', 'n_offspring',
+          'parent_type', 'parent_year', 'parent_age_class', sep=',')
     # dams
     for d in dams.keys():
         d_year, d_age = catch_age(d)
