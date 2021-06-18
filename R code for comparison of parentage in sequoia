@@ -1,0 +1,126 @@
+####comparison of three sequoia runs####
+#default = all age difference priors as estimated by sequoia
+#informed = priors for age gap of 0 and 1 for males, and 0, 1, 2 and 3 for females set to 0
+#conservative = all priors less than 0.1 set to zero, to exclude all of the most improbable relationships
+
+#packages:tidyverse#
+
+####import datasets####
+#import dataset Uts_parents_default
+Uts_parents_default <- read.csv("C:/Users/kingsley/Dropbox/projects/Atlantic salmon - Teno River Pedigree/2020 - Utsjoki pedigree data/salmon_parentage-master/2021-02-18.uts_default.prior0.parents.csv")
+
+#import dataset Uts_parents_conservative
+Uts_parents_conservative <- read.csv("C:/Users/kingsley/Dropbox/projects/Atlantic salmon - Teno River Pedigree/2020 - Utsjoki pedigree data/salmon_parentage-master/2021-02-18.uts_conservative.prior2.parents.csv")
+
+#import dataset informed
+Uts_parents_informed <- read.csv("C:/Users/kingsley/Dropbox/projects/Atlantic salmon - Teno River Pedigree/2020 - Utsjoki pedigree data/salmon_parentage-master/2021-02-18.uts_informed.prior1.parents.csv")
+
+####how many parents/offspring assigned to dams?#### 
+#dams_default
+dams_default_sum <- Uts_parents_default %>%
+  group_by(dam) %>%
+  tally(name = "n.default")
+
+#dams informed
+dams_informed_sum <- Uts_parents_informed %>%
+  group_by(dam) %>%
+  tally(name = "n.informed")
+
+#dams informed
+dams_conservative_sum <- Uts_parents_conservative %>%
+  group_by(dam) %>%
+  tally(name = "n.conserved")
+
+#join based on dam id
+dams_comp_2 <- full_join(dams_default_sum, dams_informed_sum, by='dam') %>%
+  arrange('dam')
+
+#join all three and remove NA row
+dams_comp_all <- full_join(dams_comp_2, dams_conservative_sum, by='dam') %>%
+  arrange('dam') %>%
+  filter(dam != "NA")
+
+#join class, year, type data from UtsSNPMaster #select only the columns we want
+dams_comp_alldata <- left_join(dams_comp_all, UtsSNPMasterDataKM_20.11.24, by=c("dam" = "ID")) %>%
+  select(dam, type, year, class, n.default, n.conserved, n.informed)
+
+#join data from lifehistory priors from henry
+dams_comp_alldata <- left_join(dams_comp_alldata, `2021.02.18.uts_lifehist`, by=c("dam" = "ID"))
+
+#write file
+write.csv(dams_comp_alldata,"C:/Users/kingsley/Dropbox/projects/Atlantic salmon - Teno River Pedigree/2020 - Utsjoki pedigree data/sequoia results_HB_comparison/dams_comp_alldata.csv")
+
+#how many adults/offspring as dams?
+dams_comp_alldata %>%
+  group_by(type) %>%
+  summarise_if(is.numeric, funs(n = sum(!is.na(.))))
+
+#count offspring, n.default
+dams_comp_alldata %>%
+  group_by(type) %>%
+  tally(n.default)
+
+#count offspring, n.informed
+dams_comp_alldata %>%
+  group_by(type) %>%
+  tally(n.informed)
+
+#count offspring, n.conserved
+dams_comp_alldata %>%
+  group_by(type) %>%
+  tally(n.conserved)
+
+####how many parents/offspring assigned to sires?#### 
+#sires_default
+sires_default_sum <- Uts_parents_default %>%
+  group_by(sire) %>%
+  tally(name = "n.default")
+
+#siresinformed
+sires_informed_sum <- Uts_parents_informed %>%
+  group_by(sire) %>%
+  tally(name = "n.informed")
+
+#sires informed
+sires_conservative_sum <- Uts_parents_conservative %>%
+  group_by(sire) %>%
+  tally(name = "n.conserved")
+
+#join based on dam id
+sires_comp_2 <- full_join(sires_default_sum, sires_informed_sum, by='sire') %>%
+  arrange('sire')
+
+#join all three and remove NA row
+sires_comp_all <- full_join(sires_comp_2, sires_conservative_sum, by='sire') %>%
+  arrange('sire') %>%
+  filter(sire != "NA")
+
+#join class, year, type data from UtsSNPMaster #select only the columns we want
+sires_comp_alldata <- left_join(sires_comp_all, UtsSNPMasterDataKM_20.11.24, by=c("sire" = "ID")) %>%
+  select(sire, type, year, class, n.default, n.conserved, n.informed)
+
+#join data from lifehistory priors from henry
+sires_comp_alldata <- left_join(sires_comp_alldata, `2021.02.18.uts_lifehist`, by=c("sire" = "ID"))
+
+#write file
+write.csv(sires_comp_alldata,"C:/Users/kingsley/Dropbox/projects/Atlantic salmon - Teno River Pedigree/2020 - Utsjoki pedigree data/sequoia results_HB_comparison/sires_comp_alldata.csv")
+
+#how many adults/offspring as sire?
+sires_comp_alldata %>%
+  group_by(type) %>%
+  summarise_if(is.numeric, funs(n = sum(!is.na(.))))
+
+#count offspring, n.default
+sires_comp_alldata %>%
+  group_by(type) %>%
+  tally(n.default)
+
+#count offspring, n.informed
+sires_comp_alldata %>%
+  group_by(type) %>%
+  tally(n.informed)
+
+#count offspring, n.conserved
+sires_comp_alldata %>%
+  group_by(type) %>%
+  tally(n.conserved)
