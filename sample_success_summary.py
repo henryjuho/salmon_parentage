@@ -12,7 +12,7 @@ def main():
 
     for fish in open(smaples_processed):
 
-        fish = fish.rstrip()
+        fish = fish.split('\t')[0]
 
         if fish == '':
             continue
