@@ -176,12 +176,12 @@ def main():
         #         continue  # this should skip all non uts, non male control samples
         fish_id = id_info
 
-        print(fish_id, file=samples_processed)
-
         reformed_line = [fish_id] + geno_calls
 
         # filter samples with many NAs and output list of IDs, run and percent NAs
         percent_na = geno_calls.count('NA') / float(len(geno_calls))
+        print(fish_id, percent_na, sep='\t', file=samples_processed)
+
         if percent_na > 0.2:
             fail_info = (fish_id, run, percent_na)
             low_call_ids.append(fail_info)
