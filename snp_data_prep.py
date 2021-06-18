@@ -121,11 +121,12 @@ def transpose_geno_data(data_list):
 def main():
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-in_file', help='input file', required=True)
     parser.add_argument('-miss', default=0.2, type=float)
     args = parser.parse_args()
 
     # data from Kenyon
-    km_data = open(sys.argv[1])
+    km_data = open(args.in_file)
     linked_markers = [x.rstrip() for x in open('linked_markers_toremove.txt')]
 
     male_controls = []
