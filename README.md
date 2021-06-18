@@ -34,15 +34,15 @@ printf 'c25_684F_713R_SACa\nc25_684F_713R_SACb\nUtagF_SS_148c\nc25_1441_SAC\nTN_
 The data was then prepared with:
 
 ```bash
-python snp_data_prep.py UtsSNPMasterDataKM_20.11.24.csv
-python lifehist_prep.py -filtered_csv 2021-02-18.uts_sal_allruns.filtered.csv -adult_csv Utsadults_20.04.20.csv
+python snp_data_prep.py -in_file UtsSNPMasterDataKM_20.11.24.csv -miss 0.05
+python lifehist_prep.py -filtered_csv 2021-06-18.uts_sal_allruns.filtered.csv -adult_csv Uts_Birthyear_Calc_21_06_16.csv
 ```
 
 The data from Kenyon was preprocessed to remove loci with more than 40% 'NA's, and those identified above, 
-list of removed loci: [2021-02-18.removed_loci.csv](2021-02-18.removed_loci.csv). Individuals with more than
-50% missing genotypes were also removed: [2021-02-18.removed_indivs.csv](2021-02-18.removed_indivs.csv). A list of all samples processed: 
-[2021-02-18.all_samples_process.txt](2021-02-18.all_samples_process.txt). The cleaned data was written to: 
-[2021-02-18.uts_sal_allruns.filtered.csv](2021-02-18.uts_sal_allruns.filtered.csv).
+list of removed loci: [2021-06-18.removed_loci.csv](2021-06-18/2021-06-18.removed_loci.csv). Individuals with more than
+5% missing genotypes were also removed: [2021-06-18.removed_indivs.csv](2021-06-18/2021-06-18.removed_indivs.csv). A list of all samples processed: 
+[2021-06-18.all_samples_process.txt](2021-06-18/2021-06-18.all_samples_process.txt). The cleaned data was written to: 
+[2021-06-18.uts_sal_allruns.filtered.csv](2021-06-18/2021-06-18.uts_sal_allruns.filtered.csv).
 
 <!---
 The male controls were used to estimate a per locus error rate: [marker_summary.csv](marker_summary.csv). The cleaned data was written to: 
@@ -52,7 +52,7 @@ The male controls were used to estimate a per locus error rate: [marker_summary.
 Failed samples were summarised:
 
 ```bash
-python sample_success_summary.py 2021-02-18.all_samples_process.txt 2021-02-18.removed_indivs.csv > sample_success_data.csv
+python sample_success_summary.py 2021-06-18.all_samples_process.txt 2021-06-18.removed_indivs.csv > sample_success_data.csv
 Rscript sample_success_heatmap.R 
 ```
 <img src="sample_heatmap.png" width=500 height=600>
@@ -64,10 +64,10 @@ Ran sequoia with 3 different age prior approaches. The default age priors, modif
 set as not possible (age prior to 0) for females and 
 
 ```bash
-python recode_geno_rm_sdy.py -geno 2021-02-18.uts_sal_allruns.filtered.csv > 2021-02-18.uts_sal_allruns.filtered.nosdy_recode.csv
-Rscript assign_parents_sequoia.R --geno 2021-02-18.uts_sal_allruns.filtered.nosdy_recode.csv --hist 2021-02-18.uts_lifehist.csv --out_tag uts_default --prior_type 0
-Rscript assign_parents_sequoia.R --geno 2021-02-18.uts_sal_allruns.filtered.nosdy_recode.csv --hist 2021-02-18.uts_lifehist.csv --out_tag uts_informed --prior_type 1
-Rscript assign_parents_sequoia.R --geno 2021-02-18.uts_sal_allruns.filtered.nosdy_recode.csv --hist 2021-02-18.uts_lifehist.csv --out_tag uts_conservative --prior_type 2
+python recode_geno_rm_sdy.py -geno 2021-06-18.uts_sal_allruns.filtered.csv > 2021-06-18.uts_sal_allruns.filtered.nosdy_recode.csv
+Rscript assign_parents_sequoia.R --geno 2021-06-18.uts_sal_allruns.filtered.nosdy_recode.csv --hist 2021-06-18.uts_lifehist.csv --out_tag uts_default --prior_type 0 &> uts_default.log &
+Rscript assign_parents_sequoia.R --geno 2021-06-18.uts_sal_allruns.filtered.nosdy_recode.csv --hist 2021-06-18.uts_lifehist.csv --out_tag uts_informed --prior_type 1 &> uts_informed.log &
+Rscript assign_parents_sequoia.R --geno 2021-06-18.uts_sal_allruns.filtered.nosdy_recode.csv --hist 2021-06-18.uts_lifehist.csv --out_tag uts_conservative --prior_type 2 &> uts_conservative.log &
 ```
 
 # Visualising parentage assignment
@@ -75,11 +75,21 @@ Rscript assign_parents_sequoia.R --geno 2021-02-18.uts_sal_allruns.filtered.nosd
 Assignments were summarised for each run:
 
 ```shell
-cat 2021-02-18.uts_default.prior0.parents.csv | python parents2plot.py > 2021-02-18.uts_default.prior0.parents.plotable.csv
-cat 2021-02-18.uts_informed.prior1.parents.csv | python parents2plot.py > 2021-02-18.uts_informed.prior1.parents.plotable.csv
-cat 2021-02-18.uts_conservative.prior2.parents.csv | python parents2plot.py > 2021-02-18.uts_conservative.prior2.parents.plotable.csv
+cat 2021-06-18.uts_default.prior0.parents.csv | python parents2plot.py > 2021-06-18.uts_default.prior0.parents.plotable.csv
+cat 2021-06-18.uts_informed.prior1.parents.csv | python parents2plot.py > 2021-06-18.uts_informed.prior1.parents.plotable.csv
+cat 2021-06-18.uts_conservative.prior2.parents.csv | python parents2plot.py > 2021-06-18.uts_conservative.prior2.parents.plotable.csv
 
-Rscript visualise_assignment.R --parents 2021-02-18.uts_default.prior0.parents.plotable.csv --out 2021-02-18.uts_default.prior0.assignment_plots.pdf
-Rscript visualise_assignment.R --parents 2021-02-18.uts_informed.prior1.parents.plotable.csv --out 2021-02-18.uts_informed.prior1.assignment_plots.pdf
-Rscript visualise_assignment.R --parents 2021-02-18.uts_conservative.prior2.parents.plotable.csv --out 2021-02-18.uts_conservative.prior2.assignment_plots.pdf
+Rscript visualise_assignment.R --parents 2021-06-18.uts_default.prior0.parents.plotable.csv --out 2021-06-18.uts_default.prior0.assignment_plots.pdf
+Rscript visualise_assignment.R --parents 2021-06-18.uts_informed.prior1.parents.plotable.csv --out 2021-06-18.uts_informed.prior1.assignment_plots.pdf
+Rscript visualise_assignment.R --parents 2021-06-18.uts_conservative.prior2.parents.plotable.csv --out 2021-06-18.uts_conservative.prior2.assignment_plots.pdf
+```
+
+# Tidying data
+
+Run moved to its own dated directory. Old runs in their own directories
+
+```shell
+mkdir 2021-06-18/
+mv 2021-06-18.* 2021-06-18/
+mv *.log 2021-06-18/
 ```

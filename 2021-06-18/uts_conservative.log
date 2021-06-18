@@ -1,0 +1,38 @@
+Loading required package: viridisLite
+Genotype matrix looks OK! There are  16916  individuals and  168  SNPs.
+Genotype matrix looks OK! There are  16916  individuals and  168  SNPs.
+Ageprior: Default 0/1, overlapping generations, MaxAgeParent=16,16
+There were 110 likely duplicate genotypes found, consider removing
+Parentage ...
+Initial total LL :
+[1] -1043472
+Post-parentage total LL :
+[1] -925908.7
+Estimating birth years ...
+Calculating parental LLR ...
+assigned 4222 dams and 5857 sires to 16916 individuals
+Ageprior: Pedigree-based, overlapping generations, smoothed, MaxAgeParent = 13,15
+Genotype matrix looks OK! There are  16807  individuals and  155  SNPs.
+Ageprior: Default 0/1, overlapping generations, MaxAgeParent=16,16
+Parentage ...
+Initial total LL :
+[1] -996013.6
+Post-parentage total LL :
+[1] -883691
+Estimating birth years ...
+Calculating parental LLR ...
+assigned 4234 dams and 5876 sires to 16807 individuals
+Ageprior: Pedigree-based, overlapping generations, smoothed, MaxAgeParent = 13,15
+Genotype matrix looks OK! There are  16807  individuals and  155  SNPs.
+using ageprior in SeqList
+Parentage ...
+Initial total LL :
+[1] -996013.6
+Post-parentage total LL :
+[1] -881895
+Estimating birth years ...
+Calculating parental LLR ...
+assigned 4276 dams and 5954 sires to 16807 individuals
+using ageprior in SeqList
+pdf 
+  2 
