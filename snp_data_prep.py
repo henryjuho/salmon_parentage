@@ -3,6 +3,7 @@
 import re
 import sys
 import datetime
+import argparse
 
 
 def clean_data(sample_dat, ld_markers, filtered_out, clean_out):
@@ -119,6 +120,10 @@ def transpose_geno_data(data_list):
 
 def main():
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-miss', default=0.2, type=float)
+    args = parser.parse_args()
+
     # data from Kenyon
     km_data = open(sys.argv[1])
     linked_markers = [x.rstrip() for x in open('linked_markers_toremove.txt')]
@@ -182,7 +187,7 @@ def main():
         percent_na = geno_calls.count('NA') / float(len(geno_calls))
         print(fish_id, percent_na, sep='\t', file=samples_processed)
 
-        if percent_na > 0.2:
+        if percent_na > args.miss:
             fail_info = (fish_id, run, percent_na)
             low_call_ids.append(fail_info)
             continue
