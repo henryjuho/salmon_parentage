@@ -38,7 +38,9 @@ def main():
     id_info = args.filtered_csv
     adult_ages = args.adult_csv
 
-    adult_dict = adult_age(adult_ages)
+    # adult_dict = adult_age(adult_ages)
+    year_dict = {x.split(',')[1].replace('"', ''): x.split(',')[15]
+                 for x in open(adult_ages) if not x.startswith('""')}
 
     # reformat id file
 
@@ -70,20 +72,21 @@ def main():
             sex = sexes[sex]
 
             # calculate birth year
-            catch_year = fish_id.split('_')[1]
+            # catch_year = fish_id.split('_')[1]
 
-            if 'A' in catch_year:
-                # age = 5 + int(age.replace('SW', ''))
-                # birth_approx = (int(catch_year.replace('A', '')) + 2000) - 5
-                try:
-                    birth_approx = (int(catch_year.replace('A', '')) + 2000) - adult_dict[fish_id]
-                except KeyError:
-                    birth_approx = (int(catch_year.replace('A', '')) + 2000) - 6
+            # if 'A' in catch_year:
+            #     # age = 5 + int(age.replace('SW', ''))
+            #     # birth_approx = (int(catch_year.replace('A', '')) + 2000) - 5
+            #     try:
+            #         birth_approx = (int(catch_year.replace('A', '')) + 2000) - adult_dict[fish_id]
+            #     except KeyError:
+            #         birth_approx = (int(catch_year.replace('A', '')) + 2000) - 6
+            #
+            # else:
+            #     juv_age = int(fish_id.split('_')[2].replace('y', '').replace('pp', '').replace('-3', ''))
+            #     birth_approx = int(catch_year) + 2000 - juv_age
 
-            else:
-                juv_age = int(fish_id.split('_')[2].replace('y', '').replace('pp', '').replace('-3', ''))
-                birth_approx = int(catch_year) + 2000 - juv_age
-
+            birth_approx = year_dict[fish_id]
             print(fish_id, sex, birth_approx, sep=',', file=lifehist)
 
 
